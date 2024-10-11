@@ -7,59 +7,57 @@ describe("Queue", () => {
     queue = new Queue();
   });
 
-  test("deve inicializar uma fila vazia", () => {
+  test("should initialize with an empty queue", () => {
     expect(queue.isEmpty()).toBe(true);
     expect(queue.size()).toBe(0);
   });
 
-  test("deve adicionar elementos à fila", () => {
-    queue.enqueue("A");
-    queue.enqueue("B");
+  test("should enqueue regular elements", () => {
+    queue.enqueue("Regular 1");
+    queue.enqueue("Regular 2");
 
     expect(queue.size()).toBe(2);
-    expect(queue.nextElement()).toBe("A");
+    expect(queue.nextElement()).toBe("Regular 1");
   });
 
-  test("deve remover elementos da fila", () => {
-    queue.enqueue("A");
-    queue.enqueue("B");
-
-    expect(queue.dequeue()).toBe("A");
-    expect(queue.size()).toBe(1);
-    expect(queue.nextElement()).toBe("B");
-  });
-
-  test("deve adicionar elementos prioritários na frente", () => {
-    queue.enqueue("A");
-    queue.enqueue("B");
-    queue.enqueue("C", true);
+  test("should enqueue priority elements", () => {
+    queue.enqueue("Regular 1");
+    queue.enqueue("Priority 1", true);
+    queue.enqueue("Regular 2");
 
     expect(queue.size()).toBe(3);
-    expect(queue.nextElement()).toBe("C");
+    expect(queue.nextElement()).toBe("Priority 1"); // Priority should be served first
   });
 
-  test("deve manter a ordem dos elementos prioritários", () => {
-    queue.enqueue("A", true);
-    queue.enqueue("B", true);
-    queue.enqueue("C");
+  test("should maintain order of regular elements after priority elements", () => {
+    queue.enqueue("Regular 1");
+    queue.enqueue("Priority 1", true);
+    queue.enqueue("Regular 2");
+    queue.enqueue("Priority 2", true);
 
-    expect(queue.size()).toBe(3);
-    expect(queue.nextElement()).toBe("A");
-    queue.dequeue();
-    expect(queue.nextElement()).toBe("B");
+    expect(queue.dequeue()).toBe("Priority 1"); // Should return Priority 1
+    expect(queue.dequeue()).toBe("Priority 2"); // Should return Priority 2
+    expect(queue.dequeue()).toBe("Regular 1"); // Should return Regular 1
+    expect(queue.dequeue()).toBe("Regular 2"); // Should return Regular 2
   });
 
-  test("deve retornar o próximo elemento sem removê-lo", () => {
-    queue.enqueue("A");
-    queue.enqueue("B");
+  test("should return null when dequeueing from an empty queue", () => {
+    expect(queue.dequeue()).toBe(null);
+  });
 
-    expect(queue.nextElement()).toBe("A");
+  test("should return the next element without removing it", () => {
+    queue.enqueue("Regular 1");
+    queue.enqueue("Priority 1", true);
+
+    expect(queue.nextElement()).toBe("Priority 1"); // Should return Priority 1
+    expect(queue.size()).toBe(2); // Size should not change
+  });
+
+  test("should clear the queue", () => {
+    queue.enqueue("Regular 1");
+    queue.enqueue("Priority 1", true);
+
     expect(queue.size()).toBe(2);
-  });
-
-  test("deve limpar a fila", () => {
-    queue.enqueue("A");
-    queue.enqueue("B");
 
     queue.clear();
     expect(queue.isEmpty()).toBe(true);
